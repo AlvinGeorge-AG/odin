@@ -10,12 +10,12 @@ import (
 
 var cleanCmd = &cobra.Command{
 	Use:"clean",
-	Short:"This command removes packages that were automatically installed to satisfy dependencies of other packages but are no longer required by any currently installed software",
+	Short:"",
 }
 
 var aptCmd = &cobra.Command{
 	Use:"apt",
-	Short:"",
+	Short:"This command removes packages that were automatically installed to satisfy dependencies of other packages but are no longer required by any currently installed software",
 	RunE : func(cmd *cobra.Command,args []string) error {
 		if os.Getuid() != 0 {
 			fmt.Println("❌ This command requires sudo. Run: sudo odin clean apt")
@@ -31,8 +31,24 @@ var aptCmd = &cobra.Command{
 	},
 }
 
+
+var cacheCmd  = &cobra.Command{
+	Use:"cache",
+	Short:"Clears the Cached Files",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		out,err := exec.Command("sh","-c","rm -rf ~/.cache/thumbnails/* && rm -rf ~/.cache/*").Output()
+		if err!=nil {
+			return fmt.Errorf("Failed to Run Odin clean cache! : %w",err)
+		}
+		printHeader("Cache Clean");
+		fmt.Println(string(out))
+		return nil;
+	},
+}
+
 func init(){
 	cleanCmd.AddCommand(aptCmd)
+	cleanCmd.AddCommand(cacheCmd)
 	rootCmd.AddCommand(cleanCmd)
 }
 
