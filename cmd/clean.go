@@ -32,6 +32,7 @@ var aptCmd = &cobra.Command{
 }
 
 
+
 var cacheCmd  = &cobra.Command{
 	Use:"cache",
 	Short:"Clears the Cached Files",
@@ -45,6 +46,7 @@ var cacheCmd  = &cobra.Command{
 		return nil;
 	},
 }
+
 
 func init(){
 	cleanCmd.AddCommand(aptCmd)
