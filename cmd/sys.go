@@ -76,9 +76,46 @@ var cpuCmd = &cobra.Command{
 	},
 }
 
+var memCmd = &cobra.Command{
+	Use:"ram",
+	Short:"Show real-time memory usage",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		out1 ,err1 := exec.Command("sh","-c","top -bn1 | grep Mem").Output()
+		out2,err2 := exec.Command("sh","-c","ps -eo user,pid,pcpu,pmem,comm --sort=-%mem | head").Output()
+		if err1!=nil  {
+			return fmt.Errorf("Failed to Run odin sys ram : %w",err1)
+		}
+		if err2!=nil  {
+			return fmt.Errorf("Failed to Run odin sys ram : %w",err2)
+		}
+		printHeader("RAM")
+		fmt.Println(string(out1))
+		fmt.Println(string(out2))
+		return nil
+	},
+}
+
+
+var diskCmd = &cobra.Command{
+	Use:"disk",
+	Short:"Disk usage, no tmpfs noise",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		out ,err := exec.Command("df","-h").Output()
+		if err!=nil {
+			fmt.Errorf("Failed to Run odin sys disk: %w",err)
+		}
+		printHeader("Disk Usage")
+		fmt.Println(string(out))
+		return nil
+	},
+}
+
+
 func init(){
 	sysCmd.AddCommand(infoCmd)
 	sysCmd.AddCommand(tempCmd)
 	sysCmd.AddCommand(cpuCmd)
+	sysCmd.AddCommand(memCmd)
+	sysCmd.AddCommand(diskCmd)
 	rootCmd.AddCommand(sysCmd)
 }
