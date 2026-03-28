@@ -1,0 +1,24 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'   # triggers when push a tag like v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Build binaries
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o odin-linux-amd64 .
+          GOOS=linux GOARCH=arm64 go build -o odin-linux-arm64 .
+      
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            odin-linux-amd64
+            odin-linux-arm64
