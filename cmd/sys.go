@@ -56,7 +56,7 @@ var tempCmd = &cobra.Command{
 		if err!=nil {
 			fmt.Errorf("Failed to Run odin sys temp : %w",err)
 		}
-		printHeader("Temperature")
+		printHeader("📊 Temperature")
 		fmt.Println(string(out))
 		return nil
 	},
@@ -70,7 +70,7 @@ var cpuCmd = &cobra.Command{
 		if err1!=nil {
 			return fmt.Errorf("Failed to Run odin sys cpu : %w",err1)
 		}
-		printHeader("CPU")
+		printHeader("📊 CPU")
 		fmt.Println(string(out1))
 		return nil
 	},
@@ -88,7 +88,7 @@ var memCmd = &cobra.Command{
 		if err2!=nil  {
 			return fmt.Errorf("Failed to Run odin sys ram : %w",err2)
 		}
-		printHeader("RAM")
+		printHeader("📊 RAM")
 		fmt.Println(string(out1))
 		fmt.Println(string(out2))
 		return nil
@@ -104,7 +104,7 @@ var diskCmd = &cobra.Command{
 		if err!=nil {
 			fmt.Errorf("Failed to Run odin sys disk: %w",err)
 		}
-		printHeader("Disk Usage")
+		printHeader("📊 Disk Usage")
 		fmt.Println(string(out))
 		return nil
 	},

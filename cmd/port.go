@@ -18,7 +18,7 @@ var lsCmd = &cobra.Command{
 	RunE : func(cmd *cobra.Command,args []string) error {
 		out,err := exec.Command("sh","-c","lsof -i -P -n").Output()
 		if err!=nil {
-			fmt.Errorf("Failed to Run odin port ls : %w",err)
+			return fmt.Errorf("Failed to Run odin port ls : %w",err)
 		}
 		printHeader("Open Port'S")
 		fmt.Println(string(out))
@@ -42,15 +42,17 @@ var ipCmd = &cobra.Command{
 		lines := strings.Split(string(out),"\n")
 		printHeader("🌐 IP Address")
 		fmt.Printf("\nPrivate Interfaces:\n")
-		for i , line:= range lines {
+		n := 0
+		for _, line := range lines {
 			if line==""{
 				continue
 			}
+			n++
 			fields := strings.Fields(line)
 			ip := strings.Split(fields[1],"/")[0]
 			iface := fields[len(fields)-1]
 
-			fmt.Printf("%d  %-10s → %s\n",i+1, iface, ip)
+			fmt.Printf("%d  %-10s → %s\n", n, iface, ip)
 		}
 		fmt.Printf("\nPublic Interfaces:\n")
 		fmt.Printf("%s\n",string(out1))
