@@ -62,8 +62,23 @@ var tempCmd = &cobra.Command{
 	},
 }
 
+var cpuCmd = &cobra.Command{
+	Use:"cpu",
+	Short:"Show real-time CPU usage per core",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		out1 ,err1 := exec.Command("sh","-c","top -bn1 | grep %Cpu").Output()
+		if err1!=nil {
+			return fmt.Errorf("Failed to Run odin sys cpu : %w",err1)
+		}
+		printHeader("CPU")
+		fmt.Println(string(out1))
+		return nil
+	},
+}
+
 func init(){
 	sysCmd.AddCommand(infoCmd)
 	sysCmd.AddCommand(tempCmd)
+	sysCmd.AddCommand(cpuCmd)
 	rootCmd.AddCommand(sysCmd)
 }
