@@ -53,5 +53,3 @@ func init(){
 	cleanCmd.AddCommand(cacheCmd)
 	rootCmd.AddCommand(cleanCmd)
 }
-
-// At the start of commands that need root
