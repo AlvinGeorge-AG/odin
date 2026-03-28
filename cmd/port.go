@@ -9,12 +9,12 @@ import (
 
 var portCMD = &cobra.Command{
 	Use:"port",
-	Short:"",
+	Short:"Manage and inspect network ports",
 }
 
 var lsCmd = &cobra.Command{
 	Use:"ls",
-	Short:"Show all open ports cleanly",
+	Short:"Show externally exposed ports (0.0.0.0 only)",
 	RunE : func(cmd *cobra.Command,args []string) error {
 		out,err := exec.Command("sh","-c","lsof -i -P -n").Output()
 		if err!=nil {
@@ -28,7 +28,7 @@ var lsCmd = &cobra.Command{
 
 var ipCmd = &cobra.Command{
 	Use:"ip",
-	Short:"Show the Private and Public IP of the System",
+	Short:"Show private and public IP addresses",
 	RunE : func(cmd *cobra.Command,args []string) error {
 		out,err := exec.Command("sh","-c","ip -4 addr show scope global | grep inet").Output()
 		out1,err1 := exec.Command("sh","-c","curl -s https://api.ipify.org").Output()

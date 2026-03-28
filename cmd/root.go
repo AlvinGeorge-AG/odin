@@ -7,7 +7,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "odin",
-	Short: "Developer-focused Linux CLI toolkit",
+	Short: "Odin - Developer CLI toolkit for Linux",
 	Long: `Odin abstracts painful, easy-to-forget Linux workflows into simple subcommands.Commands are grouped by category (port, proc, sys, clean, perm).`,
 	SilenceUsage: true,
 }

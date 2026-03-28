@@ -10,7 +10,7 @@ import (
 
 var cleanCmd = &cobra.Command{
 	Use:"clean",
-	Short:"",
+	Short:"Clean system caches, logs and temp files",
 }
 
 var aptCmd = &cobra.Command{

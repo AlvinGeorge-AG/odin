@@ -8,7 +8,7 @@ import (
 
 var sysCmd = &cobra.Command{
 	Use :"sys",
-	Short:"Displaying System Informations",
+	Short:"Monitor system health, CPU, RAM and disk",
 }
 	
 func printHeader(data string){

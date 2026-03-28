@@ -30,7 +30,7 @@ var portCmd = &cobra.Command{
 
 var fireWall = &cobra.Command{
 	Use:"firewall",
-	Short:"Show ports that are externally exposed",
+	Short:"Show current firewall status and rules , Show ports that are externally exposed",
 }
 
 
