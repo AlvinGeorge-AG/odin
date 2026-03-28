@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var rootCmd = &cobra.Command{
+var rootcmd = &cobra.Command{
 	Use:   "odin",
 	Short: "Developer-focused Linux CLI toolkit",
 	Long: `Odin abstracts painful, easy-to-forget Linux workflows into simple subcommands.Commands are grouped by category (port, proc, sys, clean, perm).`,
@@ -14,7 +14,7 @@ var rootCmd = &cobra.Command{
 
 // Execute runs the root command tree.
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := rootcmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
