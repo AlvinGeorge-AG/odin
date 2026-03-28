@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"fmt"
 	"os/exec"
+	"os"
 )
 
 var permOpenCmd = &cobra.Command{
@@ -27,8 +28,36 @@ var portCmd = &cobra.Command{
 }
 
 
+var fireWall = &cobra.Command{
+	Use:"firewall",
+	Short:"Show ports that are externally exposed",
+}
+
+
+var statusCmd = &cobra.Command{
+	Use:"status",
+	Short:"To show only externally exposed ports",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		if os.Getuid() != 0 {
+			fmt.Println("❌ This command requires sudo. Run: sudo odin firewall status")
+			os.Exit(1)
+		}
+		out,err := exec.Command("ufw","status").Output()
+		if err!=nil {
+			fmt.Errorf("Failed to Run odin firewall status : %w",err)
+		}
+		printHeader("Firewall Status")
+		fmt.Println(string(out))
+		return nil
+	},
+}
+
+
 
 func init(){
 	permOpenCmd.AddCommand(portCmd)
 	rootCmd.AddCommand(permOpenCmd)
+
+	fireWall.AddCommand(statusCmd)
+	rootCmd.AddCommand(fireWall)
 }
