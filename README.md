@@ -17,7 +17,7 @@ odin port kill 3000
 ## Install
  
 ```bash
-curl -sSL https://raw.githubusercontent.com/YOURUSERNAME/odin/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/AlvinGeorge-AG/odin/main/install.sh | bash
 ```
  
 This will:
