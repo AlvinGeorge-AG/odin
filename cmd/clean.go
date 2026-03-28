@@ -21,7 +21,7 @@ var aptCmd = &cobra.Command{
 			fmt.Println("❌ This command requires sudo. Run: sudo odin clean apt")
 			os.Exit(1)
 		}
-		out,err := exec.Command("sh","-c","apt autoremove && sudo apt clean").Output()
+		out,err := exec.Command("sh","-c","apt autoremove &&  apt clean").Output()
 		if err!=nil {
 			return fmt.Errorf("Failed to Run Odin Info! : %w",err)
 		}
