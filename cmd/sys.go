@@ -12,7 +12,7 @@ var sysCmd = &cobra.Command{
 }
 	
 func printHeader(data string){
-	fmt.Printf("─────────────────────────────\nODIN · %s Info\n─────────────────────────────",data)
+	fmt.Printf("─────────────────────────────\nODIN · %s Info\n─────────────────────────────\n",data)
 }
 
 var infoCmd = &cobra.Command{
@@ -48,7 +48,22 @@ var infoCmd = &cobra.Command{
 	},
 }
 
+var tempCmd = &cobra.Command{
+	Use:"temp",
+	Short:"CPU/GPU temperatures",
+	RunE : func(cmd *cobra.Command,args []string) error {
+		out ,err := exec.Command("sensors").Output()
+		if err!=nil {
+			fmt.Errorf("Failed to Run odin sys temp : %w",err)
+		}
+		printHeader("Temperature")
+		fmt.Println(string(out))
+		return nil
+	},
+}
+
 func init(){
 	sysCmd.AddCommand(infoCmd)
+	sysCmd.AddCommand(tempCmd)
 	rootCmd.AddCommand(sysCmd)
 }
