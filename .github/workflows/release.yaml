@@ -1,9 +1,11 @@
 name: Release
-
 on:
   push:
     tags:
-      - 'v*'   # triggers when push a tag like v1.0.0
+      - 'v*'
+
+permissions:        # ← add this block
+  contents: write   # ← allows creating releases
 
 jobs:
   build:
