@@ -17,7 +17,7 @@ var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "show all env variables",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		printHeader("ENV")
+		printHeader(" 📦 ENV")
 		data := os.Environ()
 		for _, line := range data {
 			parts := strings.SplitN(line, "=", 2)
@@ -40,9 +40,9 @@ var searchCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		printHeader("Search Env")
 		searchTerm := args[0]
 		data := os.Environ()
+		printHeader(" 📦 Search Env")
 		for _, line := range data {
 			parts := strings.SplitN(line, "=", 2)
 			if strings.Contains(strings.ToLower(parts[0]), strings.ToLower(searchTerm)) {
