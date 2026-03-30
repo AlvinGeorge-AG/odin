@@ -23,6 +23,7 @@ var infoCmd = &cobra.Command{
 	Short: "display information about the CPU architecture",
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		printHeader("📊 SYSTEM")
 		out, err := exec.Command("lscpu").Output()
 		out1, err1 := exec.Command("free", "-h").Output()
 		out2, err2 := exec.Command("df", "-h").Output()
@@ -112,8 +113,46 @@ var diskCmd = &cobra.Command{
 	},
 }
 
+var bootCmd = &cobra.Command{
+	Use:   "boot",
+	Short: "show startup services and boot time",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		printHeader("Boot")
+		out1, err1 := exec.Command("who", "-b").Output()
+		if err1 != nil {
+			return fmt.Errorf("Failed to Run odin sys boot (who -b): %w", err1)
+		}
+		out2, err2 := exec.Command("uptime", "-p").Output()
+		if err2 != nil {
+			return fmt.Errorf("Failed to Run odin sys boot (uptime -p): %w", err2)
+		}
+		out3, err3 := exec.Command("systemd-analyze").Output()
+		if err3 != nil {
+			return fmt.Errorf("Failed to Run odin sys boot (systemd-analyze): %w", err3)
+		}
+		out4, err4 := exec.Command("sh", "-c", "systemd-analyze blame | head -10").Output()
+		if err4 != nil {
+			return fmt.Errorf("Failed to Run odin sys boot (systemd-analyze blame): %w", err4)
+		}
+		parts := strings.SplitN(strings.TrimSpace(string(out1)), "  ", 2)
+		if len(parts) == 2 {
+			fmt.Println("Boot time:", strings.TrimSpace(parts[1]))
+		} else {
+			fmt.Println(string(out1))
+		}
+		printHeader("Uptime")
+		fmt.Println(strings.TrimSpace(string(out2)))
+		printHeader("Systemd analyze")
+		fmt.Println(strings.TrimSpace(string(out3)))
+		printHeader("Top boot services")
+		fmt.Println(strings.TrimSpace(string(out4)))
+		return nil
+	},
+}
+
 func init() {
 	sysCmd.AddCommand(infoCmd)
+	sysCmd.AddCommand(bootCmd)
 	sysCmd.AddCommand(tempCmd)
 	sysCmd.AddCommand(cpuCmd)
 	sysCmd.AddCommand(memCmd)
