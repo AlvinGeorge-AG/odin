@@ -8,7 +8,6 @@ set -e
 # ─────────────────────────────────────────────
 
 REPO="AlvinGeorge-AG/odin"
-INSTALL_DIR="/usr/local/bin"
 BINARY_NAME="odin"
 
 # ── Colors ────────────────────────────────────
@@ -32,10 +31,19 @@ echo -e "   Developer CLI Toolkit for Linux"
 echo -e "   https://github.com/${REPO}"
 echo ""
 
-# ── Check OS ──────────────────────────────────
-if [[ "$OSTYPE" != "linux-gnu"* ]]; then
-    error "Odin only supports Linux. Detected: $OSTYPE"
-fi
+# ── Detect OS ──────────────────────────────────
+UNAME_S="$(uname -s 2>/dev/null || echo unknown)"
+case "$UNAME_S" in
+    Linux*)
+        OS_LABEL="linux"
+        ;;
+    MINGW*|MSYS*|CYGWIN*)
+        OS_LABEL="windows"
+        ;;
+    *)
+        error "Unsupported OS for this installer. Detected: $UNAME_S"
+        ;;
+esac
 
 # ── Detect Architecture ───────────────────────
 ARCH=$(uname -m)
@@ -46,32 +54,38 @@ case $ARCH in
     *)       error "Unsupported architecture: $ARCH" ;;
 esac
 
+info "Detected OS: $UNAME_S ($OS_LABEL)"
 info "Detected architecture: $ARCH ($ARCH_LABEL)"
 
-# ── Check sudo ────────────────────────────────
-if ! command -v sudo &>/dev/null; then
-    error "sudo is required but not found."
-fi
+# ── Check Dependencies (Linux only) ────────────
+if [ "$OS_LABEL" = "linux" ]; then
+    echo ""
+    info "Checking dependencies..."
 
-# ── Check Dependencies ────────────────────────
-echo ""
-info "Checking dependencies..."
+    # ── Check sudo ────────────────────────────
+    if ! command -v sudo &>/dev/null; then
+        error "sudo is required but not found."
+    fi
 
-MISSING=()
+    MISSING=()
+    command -v lsof    &>/dev/null || MISSING+=("lsof")
+    command -v curl    &>/dev/null || MISSING+=("curl")
+    command -v ufw     &>/dev/null || MISSING+=("ufw")
+    command -v sensors &>/dev/null || MISSING+=("lm-sensors")
 
-command -v lsof    &>/dev/null || MISSING+=("lsof")
-command -v curl    &>/dev/null || MISSING+=("curl")
-command -v ufw     &>/dev/null || MISSING+=("ufw")
-command -v sensors &>/dev/null || MISSING+=("lm-sensors")
-
-if [ ${#MISSING[@]} -ne 0 ]; then
-    warning "Missing dependencies: ${MISSING[*]}"
-    info "Installing missing packages..."
-    sudo apt-get update -qq
-    sudo apt-get install -y "${MISSING[@]}" &>/dev/null
-    success "Dependencies installed."
+    if [ ${#MISSING[@]} -ne 0 ]; then
+        warning "Missing dependencies: ${MISSING[*]}"
+        info "Installing missing packages..."
+        sudo apt-get update -qq
+        sudo apt-get install -y "${MISSING[@]}" &>/dev/null
+        success "Dependencies installed."
+    else
+        success "All dependencies are present."
+    fi
 else
-    success "All dependencies are present."
+    # On Windows, this script assumes you are running in a POSIX shell
+    # (Git Bash / MSYS / Cygwin / WSL). Native Windows doesn't include sh.
+    command -v curl &>/dev/null || error "curl is required but not found."
 fi
 
 # ── Get Latest Release ────────────────────────
@@ -89,10 +103,15 @@ fi
 success "Latest version: $LATEST"
 
 # ── Download Binary ───────────────────────────
-BINARY_URL="https://github.com/${REPO}/releases/download/${LATEST}/odin-linux-${ARCH_LABEL}"
-TMP_PATH="/tmp/odin"
+EXT=""
+if [ "$OS_LABEL" = "windows" ]; then
+    EXT=".exe"
+fi
 
-info "Downloading Odin ${LATEST} for linux-${ARCH_LABEL}..."
+BINARY_URL="https://github.com/${REPO}/releases/download/${LATEST}/odin-${OS_LABEL}-${ARCH_LABEL}${EXT}"
+TMP_PATH="/tmp/odin${EXT}"
+
+info "Downloading Odin ${LATEST} for ${OS_LABEL}-${ARCH_LABEL}..."
 
 curl -sL "$BINARY_URL" -o "$TMP_PATH"
 
@@ -101,11 +120,19 @@ if [ ! -f "$TMP_PATH" ]; then
 fi
 
 # ── Install Binary ────────────────────────────
-sudo mv "$TMP_PATH" "$INSTALL_DIR/$BINARY_NAME"
-sudo chmod +x "$INSTALL_DIR/$BINARY_NAME"
+if [ "$OS_LABEL" = "linux" ]; then
+    INSTALL_DIR="/usr/local/bin"
+    sudo mv "$TMP_PATH" "$INSTALL_DIR/$BINARY_NAME"
+    sudo chmod +x "$INSTALL_DIR/$BINARY_NAME"
+else
+    INSTALL_DIR="${HOME}/.local/bin"
+    mkdir -p "$INSTALL_DIR"
+    mv "$TMP_PATH" "$INSTALL_DIR/${BINARY_NAME}${EXT}"
+    chmod +x "$INSTALL_DIR/${BINARY_NAME}${EXT}" 2>/dev/null || true
+fi
 
 # ── Verify Installation ───────────────────────
-if command -v odin &>/dev/null; then
+if command -v odin &>/dev/null || [ -x "$INSTALL_DIR/$BINARY_NAME" ] || [ -x "$INSTALL_DIR/${BINARY_NAME}${EXT}" ]; then
     echo ""
     echo -e "${GREEN}${BOLD}✅ Odin installed successfully!${RESET}"
     echo ""
@@ -113,6 +140,9 @@ if command -v odin &>/dev/null; then
     echo ""
     echo -e "   Example Run ${BOLD}odin ip"
     echo ""
+    if [ "$OS_LABEL" = "windows" ]; then
+        warning "If 'odin' isn't found, add ${INSTALL_DIR} to your PATH."
+    fi
 else
     error "Installation failed. Binary not found in PATH."
 fi
