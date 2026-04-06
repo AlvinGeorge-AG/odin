@@ -17,10 +17,13 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o odin-linux-amd64 .
           GOOS=linux GOARCH=arm64 go build -o odin-linux-arm64 .
+          GOOS=windows GOARCH=amd64 go build -o odin-windows-amd64.exe .
       
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
+          body_path: RELEASE_NOTES.md
           files: |
             odin-linux-amd64
             odin-linux-arm64
+            odin-windows-amd64.exe
