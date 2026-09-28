@@ -100,3 +100,13 @@ func sysBoot() error {
 	fmt.Println(string(outServices))
 	return nil
 }
+
+func sysFree() error {
+	out, err := runPowerShell(`Get-Volume | Select-Object DriveLetter, FileSystemLabel, FileSystemType, SizeRemaining, Size | Format-Table -AutoSize | Out-String`)
+	if err != nil {
+		return fmt.Errorf("failed to run odin free: %w\n%s", err, string(out))
+	}
+	printHeader("💾 Disk Free Space")
+	fmt.Println(string(out))
+	return nil
+}

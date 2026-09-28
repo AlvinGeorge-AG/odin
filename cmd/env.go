@@ -8,14 +8,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var env = &cobra.Command{
+var envCmd = &cobra.Command{
 	Use:   "env",
-	Short: "",
-}
-
-var showCmd = &cobra.Command{
-	Use:   "show",
-	Short: "show all env variables",
+	Short: "Show all environment variables",
+	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		printHeader(" 📦 ENV")
 		data := os.Environ()
@@ -27,34 +23,30 @@ var showCmd = &cobra.Command{
 	},
 }
 
-var searchCmd = &cobra.Command{
-	Use:   "find [term]",
-	Short: "Find the given env variable if present",
-	Args: func(cmd *cobra.Command, args []string) error {
-		if len(args) == 0 {
-			return fmt.Errorf("please provide a search term")
-		}
-		if len(args) > 1 {
-			return fmt.Errorf("please provide only one search term")
-		}
-		return nil
-	},
+var envFindCmd = &cobra.Command{
+	Use:   "env-find [term]",
+	Short: "Find environment variable by name",
+	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		searchTerm := args[0]
 		data := os.Environ()
 		printHeader(" 📦 Search Env")
+		found := false
 		for _, line := range data {
 			parts := strings.SplitN(line, "=", 2)
 			if strings.Contains(strings.ToLower(parts[0]), strings.ToLower(searchTerm)) {
 				fmt.Printf("%-20s = %s\n", parts[0], parts[1])
+				found = true
 			}
+		}
+		if !found {
+			fmt.Printf("No environment variables found matching '%s'\n", searchTerm)
 		}
 		return nil
 	},
 }
 
 func init() {
-	env.AddCommand(showCmd)
-	env.AddCommand(searchCmd)
-	rootCmd.AddCommand(env)
+	rootCmd.AddCommand(envCmd)
+	rootCmd.AddCommand(envFindCmd)
 }

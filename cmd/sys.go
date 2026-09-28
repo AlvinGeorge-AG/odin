@@ -7,11 +7,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var sysCmd = &cobra.Command{
-	Use:   "sys",
-	Short: "Monitor system health, CPU, RAM and disk",
-}
-
 func printHeader(data string) {
 	upperData := strings.ToUpper(data)
 	fmt.Printf("─────────────────────────────\nODIN · %s INFO\n─────────────────────────────\n", upperData)
@@ -66,12 +61,21 @@ var bootCmd = &cobra.Command{
 	},
 }
 
+var freeCmd = &cobra.Command{
+	Use:   "free",
+	Short: "Show disk space usage (df -h)",
+	Args:  cobra.NoArgs,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return sysFree()
+	},
+}
+
 func init() {
-	sysCmd.AddCommand(infoCmd)
-	sysCmd.AddCommand(bootCmd)
-	sysCmd.AddCommand(tempCmd)
-	sysCmd.AddCommand(cpuCmd)
-	sysCmd.AddCommand(memCmd)
-	sysCmd.AddCommand(diskCmd)
-	rootCmd.AddCommand(sysCmd)
+	rootCmd.AddCommand(infoCmd)
+	rootCmd.AddCommand(tempCmd)
+	rootCmd.AddCommand(cpuCmd)
+	rootCmd.AddCommand(memCmd)
+	rootCmd.AddCommand(diskCmd)
+	rootCmd.AddCommand(bootCmd)
+	rootCmd.AddCommand(freeCmd)
 }

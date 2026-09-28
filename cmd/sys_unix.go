@@ -114,3 +114,13 @@ func sysBoot() error {
 	fmt.Println(strings.TrimSpace(string(out4)))
 	return nil
 }
+
+func sysFree() error {
+	out, err := exec.Command("df", "-h").Output()
+	if err != nil {
+		return fmt.Errorf("Failed to Run odin free: %w", err)
+	}
+	printHeader("💾 Disk Free Space")
+	fmt.Println(string(out))
+	return nil
+}

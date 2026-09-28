@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const VERSION = "v4.0.0"
+const VERSION = "v4.0.1"
 
 var rootCmd = &cobra.Command{
 	Use:          "odin",

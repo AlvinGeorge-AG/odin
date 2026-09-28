@@ -4,36 +4,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var permOpenCmd = &cobra.Command{
-	Use:   "open",
-	Short: "Show ports that are externally exposed",
-}
-
-var portCmd = &cobra.Command{
-	Use:   "ports",
-	Short: "To show only externally exposed ports",
+var openPortsCmd = &cobra.Command{
+	Use:   "open-ports",
+	Short: "Show listening sockets on all interfaces (externally exposed)",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return securityOpenPorts()
 	},
 }
 
-var fireWall = &cobra.Command{
+var firewallCmd = &cobra.Command{
 	Use:   "firewall",
-	Short: "Show current firewall status and rules , Show ports that are externally exposed",
-}
-
-var statusCmd = &cobra.Command{
-	Use:   "status",
-	Short: "To show only externally exposed ports",
+	Short: "Show current firewall status and rules (requires sudo)",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return securityFirewallStatus()
 	},
 }
 
 func init() {
-	permOpenCmd.AddCommand(portCmd)
-	rootCmd.AddCommand(permOpenCmd)
-
-	fireWall.AddCommand(statusCmd)
-	rootCmd.AddCommand(fireWall)
+	rootCmd.AddCommand(openPortsCmd)
+	rootCmd.AddCommand(firewallCmd)
 }

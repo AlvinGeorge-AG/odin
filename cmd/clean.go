@@ -4,11 +4,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cleanCmd = &cobra.Command{
-	Use:   "clean",
-	Short: "Clean system caches, logs and temp files",
+var cleanAptCmd = &cobra.Command{
+	Use:   "clean-apt",
+	Short: "Remove unused packages and clean apt cache (requires sudo)",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cleanApt()
+	},
+}
+
+var cleanCacheCmd = &cobra.Command{
+	Use:   "clean-cache",
+	Short: "Clear cached files under ~/.cache",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cleanCache()
+	},
 }
 
 func init() {
-	rootCmd.AddCommand(cleanCmd)
+	rootCmd.AddCommand(cleanAptCmd)
+	rootCmd.AddCommand(cleanCacheCmd)
 }
